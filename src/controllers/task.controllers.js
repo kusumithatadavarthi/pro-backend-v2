@@ -45,17 +45,20 @@ const update_task=async(req,res,next)=>{
 }
 const get_tasks=async(req,res,next)=>{
     try{
+    const page= Number(req.query.page)||1
+    const limit=Number(req.query.limit)||10
     const user_id=req.user.id;
     const user=await prisma.user.findUnique({where:{id:user_id}});
     if(!user){
         return res.status(404).send("user not found");
     }
-    const tasks=await prisma.task.findMany({where:{userId:user_id,include:{user:true}}});
+    const tasks=await prisma.task.findMany({where:{userId:user_id},include:{user:true},skip:(page-1)*limit,take:limit});
+    const total=await prisma.task.count({where:{userId:user_id}})
     if(tasks.length===0){
         return res.status(404).send('No tasks available');
 
     }
-    res.status(200).json({tasks})
+    res.status(200).json({tasks,total,page,limit,totalPages: Math.ceil(total / limit)})
 }
 catch(err){
     next(err);
