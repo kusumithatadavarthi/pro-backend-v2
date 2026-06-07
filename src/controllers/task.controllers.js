@@ -52,7 +52,21 @@ const get_tasks=async(req,res,next)=>{
     if(!user){
         return res.status(404).send("user not found");
     }
-    const tasks=await prisma.task.findMany({where:{userId:user_id},include:{user:true},skip:(page-1)*limit,take:limit});
+   const tasks = await prisma.task.findMany({
+  where: { userId: user_id },
+  include: { 
+    user: {
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true
+      }
+    }
+  },
+  skip: (page - 1) * limit,
+  take: limit
+})
     const total=await prisma.task.count({where:{userId:user_id}})
     if(tasks.length===0){
         return res.status(404).send('No tasks available');
