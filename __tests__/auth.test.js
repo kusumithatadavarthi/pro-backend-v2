@@ -9,7 +9,7 @@ describe('Auth Endpoints', () => {
       .post('/signup')
       .send({ 
         name: 'TestUser', 
-        email: 'testuser@gmail.com', 
+        email: 'testuser11@gmail.com', 
         password: '123456' 
       })
     
